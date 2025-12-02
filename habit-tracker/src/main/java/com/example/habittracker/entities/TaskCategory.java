@@ -26,5 +26,5 @@ public class TaskCategory {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Task> task=new ArrayList<>();
+    private List<Task> tasks=new ArrayList<>();
 }

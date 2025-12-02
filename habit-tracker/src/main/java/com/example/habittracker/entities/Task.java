@@ -18,9 +18,11 @@ public class Task {
 
     private String title;
 
-     private boolean completed=false;
+     private boolean completed;
 
      @ManyToOne(fetch = FetchType.LAZY)
      @JoinColumn(name = "task_category_id")
      private TaskCategory taskCategory;
+
+
 }

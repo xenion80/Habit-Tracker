@@ -3,9 +3,8 @@ package com.example.habittracker.DTOs;
 import lombok.Data;
 
 @Data
-public class TaskDTO {
+public class TaskCategoryDTO {
     private Long id;
+    private String name;
 
-    private String title;
-    private boolean completed;
 }
