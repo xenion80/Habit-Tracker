@@ -20,6 +20,7 @@ public class User {
     private Long id;
 
     private String name;
+
     @OneToMany(mappedBy = "user",
     orphanRemoval = true,
     fetch = FetchType.LAZY,

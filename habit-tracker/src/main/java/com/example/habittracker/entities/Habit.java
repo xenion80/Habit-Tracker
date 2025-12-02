@@ -21,9 +21,13 @@ public class Habit {
 
     private String title;
 
+    private int Streak;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private  User user;
+
+
     @OneToMany(mappedBy = "habit",
             cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
