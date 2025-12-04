@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,7 +22,7 @@ public class Habit {
 
     private String title;
 
-    private int Streak;
+    private int streak;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
