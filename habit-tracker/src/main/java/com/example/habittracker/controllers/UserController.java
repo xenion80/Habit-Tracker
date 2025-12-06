@@ -6,6 +6,7 @@ import com.example.habittracker.inputmodels.CreateHabitRequest;
 import com.example.habittracker.inputmodels.CreateUserRequest;
 import com.example.habittracker.services.HabitService;
 import com.example.habittracker.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,14 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody CreateUserRequest request){
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody CreateUserRequest request){
         UserDTO dto=userService.createUser(request.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
     @PostMapping("/{id}/habits")
     public ResponseEntity<HabitDTO> createHabitForUser(
             @PathVariable Long id,
-            @RequestBody CreateHabitRequest request
+           @Valid @RequestBody CreateHabitRequest request
     ){
         HabitDTO dto=habitService.createHabit(id,request.getTitle());
         return ResponseEntity.status((HttpStatus.CREATED)).body(dto);

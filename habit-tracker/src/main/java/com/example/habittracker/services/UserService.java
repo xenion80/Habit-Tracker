@@ -3,6 +3,7 @@ package com.example.habittracker.services;
 import com.example.habittracker.DTOs.HabitDTO;
 import com.example.habittracker.DTOs.UserDTO;
 import com.example.habittracker.entities.User;
+import com.example.habittracker.exception.UserNotFoundException;
 import com.example.habittracker.repositories.HabitRepository;
 import com.example.habittracker.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -30,7 +31,7 @@ public class UserService {
     }
     @Transactional
     public UserDTO getUserWithHabits(Long UserId){
-        User user=userRepository.findById(UserId).orElseThrow(()->new RuntimeException("User of this id not found"));
+        User user=userRepository.findById(UserId).orElseThrow(()->new UserNotFoundException("User of this id not found"));
         UserDTO userDTO=new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setName(user.getName());

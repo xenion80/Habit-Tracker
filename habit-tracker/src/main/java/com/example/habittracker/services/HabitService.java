@@ -5,6 +5,8 @@ import com.example.habittracker.DTOs.HabitLogDTO;
 import com.example.habittracker.entities.Habit;
 import com.example.habittracker.entities.HabitLog;
 import com.example.habittracker.entities.User;
+import com.example.habittracker.exception.HabitNotFoundException;
+import com.example.habittracker.exception.UserNotFoundException;
 import com.example.habittracker.repositories.HabitLogRepository;
 import com.example.habittracker.repositories.HabitRepository;
 import com.example.habittracker.repositories.UserRepository;
@@ -23,7 +25,7 @@ public class HabitService {
     private final UserRepository userRepository;
 
     public HabitDTO createHabit(Long UserId, String title){
-        User user=userRepository.findById(UserId).orElseThrow(()->new RuntimeException("User not found"));
+        User user=userRepository.findById(UserId).orElseThrow(()->new UserNotFoundException("User not found"));
         Habit habit=new Habit();
         habit.setTitle(title);
         habit.setStreak(0);
@@ -42,7 +44,7 @@ public class HabitService {
     }
     @Transactional
     public HabitDTO completeHabit(Long HabitId){
-        Habit habit=habitRepository.findById(HabitId).orElseThrow(()->new RuntimeException("Habit not found"));
+        Habit habit=habitRepository.findById(HabitId).orElseThrow(()->new HabitNotFoundException("Habit not found"));
         HabitLog log=new HabitLog();
         log.setHabit(habit);
         log.setDate(LocalDate.now());
@@ -58,7 +60,7 @@ public class HabitService {
 
     }
     public List<HabitLogDTO> getLogs(Long HabitId){
-        Habit habit=habitRepository.findById(HabitId).orElseThrow(()->new RuntimeException("Habits Not Found"));
+        Habit habit=habitRepository.findById(HabitId).orElseThrow(()->new HabitNotFoundException("Habits Not Found"));
         return habit.getLogs().stream().map(log ->{
             HabitLogDTO dto=new HabitLogDTO();
             dto.setId(log.getId());
@@ -69,7 +71,7 @@ public class HabitService {
         }).toList();
     }
     public List<HabitDTO> getAllHabitForUser(Long UserId) {
-        User user = userRepository.findById(UserId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(UserId).orElseThrow(() -> new UserNotFoundException("User not found"));
         return user.getHabits().stream().map(habit -> {
             HabitDTO dto = new HabitDTO();
             dto.setId(habit.getId());
