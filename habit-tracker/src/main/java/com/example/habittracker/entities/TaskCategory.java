@@ -27,4 +27,8 @@ public class TaskCategory {
             orphanRemoval = true
     )
     private List<Task> tasks=new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

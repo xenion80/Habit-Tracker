@@ -28,4 +28,11 @@ public class User {
     fetch = FetchType.LAZY,
     cascade = CascadeType.ALL)
     private List<Habit> habits=new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade=CascadeType.ALL
+    )
+    private List<TaskCategory> categories=new ArrayList<>();
 }

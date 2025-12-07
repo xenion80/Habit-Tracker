@@ -1,6 +1,8 @@
 package com.example.habittracker.advices;
 
+import com.example.habittracker.exception.CategoryNotFoundException;
 import com.example.habittracker.exception.HabitNotFoundException;
+import com.example.habittracker.exception.TaskNotFoundException;
 import com.example.habittracker.exception.UserNotFoundException;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,26 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(HabitNotFoundException.class)
     public ResponseEntity<ApiError> habitNotFound(HabitNotFoundException exception){
+        ApiError apiError=ApiError.builder()
+                .status(404)
+                .message(Collections.singletonList(exception.getMessage()))
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+
+    }
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<ApiError> TaskNotFound(TaskNotFoundException exception){
+        ApiError apiError=ApiError.builder()
+                .status(404)
+                .message(Collections.singletonList(exception.getMessage()))
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
+
+    }
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<ApiError> CategoryNotFound(CategoryNotFoundException exception){
         ApiError apiError=ApiError.builder()
                 .status(404)
                 .message(Collections.singletonList(exception.getMessage()))

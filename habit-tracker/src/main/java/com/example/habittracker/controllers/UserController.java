@@ -1,10 +1,13 @@
 package com.example.habittracker.controllers;
 
 import com.example.habittracker.DTOs.HabitDTO;
+import com.example.habittracker.DTOs.TaskCategoryDTO;
 import com.example.habittracker.DTOs.UserDTO;
+import com.example.habittracker.inputmodels.CreateCategoryRequest;
 import com.example.habittracker.inputmodels.CreateHabitRequest;
 import com.example.habittracker.inputmodels.CreateUserRequest;
 import com.example.habittracker.services.HabitService;
+import com.example.habittracker.services.TaskService;
 import com.example.habittracker.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import java.util.List;
 public class UserController {
     private final HabitService habitService;
     private final UserService userService;
+    private final TaskService taskService;
 
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody CreateUserRequest request){
@@ -40,6 +44,24 @@ public class UserController {
     public ResponseEntity<List<HabitDTO>> getHabitForUser(@PathVariable Long id){
         List<HabitDTO> dtos=habitService.getAllHabitForUser(id);
         return ResponseEntity.ok(dtos);
+    }
+
+    @PostMapping("/{userId}/categories")
+    public ResponseEntity<TaskCategoryDTO> createCategory(
+            @PathVariable Long userId,
+            @Valid @RequestBody CreateCategoryRequest request
+    ){
+        TaskCategoryDTO dto=taskService.createcategory(userId,request.getTitle());
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    @GetMapping("/{userId}/categories")
+    public ResponseEntity<List<TaskCategoryDTO>> getCategories(@PathVariable Long userId){
+        return ResponseEntity.ok(taskService.getCategoryforUser(userId));
+    }
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getUserwithhabits(@PathVariable Long userId){
+        return ResponseEntity.ok(userService.getUserWithHabits(userId));
     }
 
 

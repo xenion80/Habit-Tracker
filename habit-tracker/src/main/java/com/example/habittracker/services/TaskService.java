@@ -4,8 +4,13 @@ import com.example.habittracker.DTOs.TaskCategoryDTO;
 import com.example.habittracker.DTOs.TaskDTO;
 import com.example.habittracker.entities.Task;
 import com.example.habittracker.entities.TaskCategory;
+import com.example.habittracker.entities.User;
+import com.example.habittracker.exception.CategoryNotFoundException;
+import com.example.habittracker.exception.TaskNotFoundException;
+import com.example.habittracker.exception.UserNotFoundException;
 import com.example.habittracker.repositories.TaskCategoryRepository;
 import com.example.habittracker.repositories.TaskRepository;
+import com.example.habittracker.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +21,10 @@ import java.util.List;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskCategoryRepository taskCategoryRepository;
+    private final UserRepository userRepository;
 
     public TaskDTO createTask(Long TaskCategoryId, String title){
-        TaskCategory taskCategory=taskCategoryRepository.findById(TaskCategoryId).orElseThrow(()->new RuntimeException("Task Category don't exist"));
+        TaskCategory taskCategory=taskCategoryRepository.findById(TaskCategoryId).orElseThrow(()->new TaskNotFoundException("Task Category don't exist"));
 
         Task task=new Task();
         task.setTaskCategory(taskCategory);
@@ -38,21 +44,24 @@ public class TaskService {
 
 
     }
-    public TaskCategoryDTO createcategory(String name){
+    public TaskCategoryDTO createcategory(Long userId,String name){
+        User user=userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
         TaskCategory taskCategory=new TaskCategory();
         taskCategory.setName(name);
+        taskCategory.setUser(user);
         TaskCategory saved=taskCategoryRepository.save(taskCategory);
 
         TaskCategoryDTO taskCategoryDTO=new TaskCategoryDTO();
         taskCategoryDTO.setId(saved.getId());
-        taskCategoryDTO.setName(saved.getName());
+        taskCategoryDTO.setTitle(saved.getName());
         return taskCategoryDTO;
 
     }
-    public TaskDTO getTaskDone(Long TaskId){
-        Task task=taskRepository.findById(TaskId).orElseThrow(()->new RuntimeException("task not found"));
+    public TaskDTO getTaskDone(Long taskid){
+        Task task=taskRepository.findById(taskid).orElseThrow(()->new TaskNotFoundException("task not found"));
 
         task.setCompleted(true);
+        taskRepository.save(task);
 
 
         TaskDTO taskDTO=new TaskDTO();
@@ -63,7 +72,7 @@ public class TaskService {
     }
 
     public List<TaskDTO> getTaskByCategory(Long TaskCategoryId){
-        TaskCategory taskCategory =taskCategoryRepository.findById(TaskCategoryId).orElseThrow(()->new RuntimeException("The category not found"));
+        TaskCategory taskCategory =taskCategoryRepository.findById(TaskCategoryId).orElseThrow(()->new CategoryNotFoundException("The category not found"));
         return taskCategory.getTasks().stream().map(task -> {
             TaskDTO taskDTO=new TaskDTO();
             taskDTO.setTitle(task.getTitle());
@@ -71,5 +80,10 @@ public class TaskService {
             taskDTO.setId(task.getId());
             return taskDTO;
         }).toList();
+    }
+
+    public List<TaskCategoryDTO> getCategoryforUser(Long UserId){
+        User user=userRepository.findById(UserId).orElseThrow(()->new UserNotFoundException("User not found"));
+        return user.getCategories().stream().map(taskCategory -> new TaskCategoryDTO(taskCategory.getId(),taskCategory.getName())).toList();
     }
 }

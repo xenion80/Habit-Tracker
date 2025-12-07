@@ -1,13 +1,14 @@
 package com.example.habittracker.controllers;
 
 import com.example.habittracker.DTOs.HabitDTO;
+import com.example.habittracker.DTOs.HabitLogDTO;
 import com.example.habittracker.services.HabitService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,5 +21,12 @@ public class HabitController {
     public ResponseEntity<HabitDTO> completedTask(@PathVariable("habitId") Long id){
         HabitDTO dto=habitService.completeHabit(id);
         return ResponseEntity.ok(dto);
+    }
+    @GetMapping("/{habitId}/logs")
+    public ResponseEntity<List<HabitLogDTO>> getLogs(@PathVariable Long habitId){
+        List<HabitLogDTO> dto=habitService.getLogs(habitId);
+        return ResponseEntity.ok(dto);
+
+
     }
 }

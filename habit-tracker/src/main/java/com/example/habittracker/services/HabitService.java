@@ -59,8 +59,8 @@ public class HabitService {
         return dto;
 
     }
-    public List<HabitLogDTO> getLogs(Long HabitId){
-        Habit habit=habitRepository.findById(HabitId).orElseThrow(()->new HabitNotFoundException("Habits Not Found"));
+    public List<HabitLogDTO> getLogs(Long habitId){
+        Habit habit=habitRepository.findById(habitId).orElseThrow(()->new HabitNotFoundException("Habits Not Found"));
         return habit.getLogs().stream().map(log ->{
             HabitLogDTO dto=new HabitLogDTO();
             dto.setId(log.getId());
