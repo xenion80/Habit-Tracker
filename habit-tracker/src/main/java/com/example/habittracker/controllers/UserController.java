@@ -11,6 +11,10 @@ import com.example.habittracker.services.TaskService;
 import com.example.habittracker.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,10 +45,23 @@ public class UserController {
     }
 
     @GetMapping("/{id}/habits")
-    public ResponseEntity<List<HabitDTO>> getHabitForUser(@PathVariable Long id){
-        List<HabitDTO> dtos=habitService.getAllHabitForUser(id);
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<Page<HabitDTO>> getHabitForUser(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id,asc") String sort
+    ) {
+        String[] sortParams = sort.split(",");
+        Sort sorting = sortParams[1].equalsIgnoreCase("desc")
+                ? Sort.by(sortParams[0]).descending()
+                : Sort.by(sortParams[0]).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sorting);
+
+        return ResponseEntity.ok(habitService.getAllHabitForUser(id, pageable));
     }
+
+
 
     @PostMapping("/{userId}/categories")
     public ResponseEntity<TaskCategoryDTO> createCategory(

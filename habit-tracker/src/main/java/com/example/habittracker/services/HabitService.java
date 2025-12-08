@@ -12,6 +12,8 @@ import com.example.habittracker.repositories.HabitRepository;
 import com.example.habittracker.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -59,26 +61,30 @@ public class HabitService {
         return dto;
 
     }
-    public List<HabitLogDTO> getLogs(Long habitId){
-        Habit habit=habitRepository.findById(habitId).orElseThrow(()->new HabitNotFoundException("Habits Not Found"));
-        return habit.getLogs().stream().map(log ->{
-            HabitLogDTO dto=new HabitLogDTO();
-            dto.setId(log.getId());
-            dto.setDate(log.getDate());
-            return dto;
+    public Page<HabitLogDTO> getLogs(Long habitId, LocalDate from, LocalDate to, Pageable pageable) {
 
+        Page<HabitLog> pageResult;
 
-        }).toList();
+        if (from != null && to != null) {
+            pageResult = habitLogRepository.findByHabitIdAndDateBetween(habitId, from, to, pageable);
+        } else {
+            pageResult = habitLogRepository.findByHabitId(habitId, pageable);
+        }
+
+        return pageResult.map(log -> new HabitLogDTO(
+                log.getId(),
+                log.getDate()
+        ));
     }
-    public List<HabitDTO> getAllHabitForUser(Long UserId) {
-        User user = userRepository.findById(UserId).orElseThrow(() -> new UserNotFoundException("User not found"));
-        return user.getHabits().stream().map(habit -> {
-            HabitDTO dto = new HabitDTO();
-            dto.setId(habit.getId());
-            dto.setTitle(habit.getTitle());
-            dto.setStreak(habit.getStreak());
-            return dto;
-        }).toList();
+
+    @Transactional
+    public Page<HabitDTO> getAllHabitForUser(Long UserId, Pageable pageable) {
+       Page<Habit> habits=habitRepository.findByUserId(UserId,pageable);
+        return habits.map(habit -> new HabitDTO(
+                habit.getId(),
+                habit.getTitle(),
+                habit.getStreak()
+        ));
     }
 
 }
