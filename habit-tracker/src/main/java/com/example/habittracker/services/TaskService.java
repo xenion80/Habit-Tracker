@@ -5,7 +5,6 @@ import com.example.habittracker.DTOs.TaskDTO;
 import com.example.habittracker.entities.Task;
 import com.example.habittracker.entities.TaskCategory;
 import com.example.habittracker.entities.User;
-import com.example.habittracker.exception.CategoryNotFoundException;
 import com.example.habittracker.exception.TaskNotFoundException;
 import com.example.habittracker.exception.UserNotFoundException;
 import com.example.habittracker.repositories.TaskCategoryRepository;
@@ -15,8 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -85,8 +82,13 @@ public class TaskService {
     }
 
 
-    public List<TaskCategoryDTO> getCategoryforUser(Long UserId){
-        User user=userRepository.findById(UserId).orElseThrow(()->new UserNotFoundException("User not found"));
-        return user.getCategories().stream().map(taskCategory -> new TaskCategoryDTO(taskCategory.getId(),taskCategory.getName())).toList();
+    public Page<TaskCategoryDTO> getCategoryforUser(Long userId,Pageable pageable){
+        Page<TaskCategory> result=taskRepository.findByUserId(userId,pageable);
+        return result.map(taskCategory -> new TaskCategoryDTO(
+                taskCategory.getId(),
+                taskCategory.getName()
+
+
+        ));
     }
 }

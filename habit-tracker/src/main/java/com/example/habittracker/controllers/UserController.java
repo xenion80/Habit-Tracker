@@ -73,8 +73,19 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/categories")
-    public ResponseEntity<List<TaskCategoryDTO>> getCategories(@PathVariable Long userId){
-        return ResponseEntity.ok(taskService.getCategoryforUser(userId));
+    public ResponseEntity<Page<TaskCategoryDTO>> getCategoriesforUser(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0")int page,
+            @RequestParam(defaultValue = "10")int size,
+            @RequestParam(defaultValue = "id,asc")String sort
+    ){
+        String[] sortParam=sort.split(",");
+        Sort sorting=sortParam[1].equalsIgnoreCase("desc")
+                ?Sort.by(sortParam[0]).descending()
+                :Sort.by(sortParam[0]).ascending();
+        Pageable pageable=PageRequest.of(page,size,sorting);
+
+        return ResponseEntity.ok(taskService.getCategoryforUser(userId,pageable));
     }
     @GetMapping("/{userId}")
     public ResponseEntity<UserDTO> getUserwithhabits(@PathVariable Long userId){
