@@ -8,6 +8,7 @@ import com.example.habittracker.repositories.HabitRepository;
 import com.example.habittracker.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,5 +45,13 @@ public class UserService {
         }).toList();
         userDTO.setHabits(habitDTOS);
         return userDTO;
+    }
+
+    @Transactional
+    public  void deleteUser(Long userId) {
+        User user=userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("there is no user  for this userid"));
+        userRepository.deleteById(userId);
+
+
     }
 }

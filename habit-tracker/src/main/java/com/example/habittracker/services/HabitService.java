@@ -87,4 +87,9 @@ public class HabitService {
         ));
     }
 
+    @Transactional
+    public void deleteHabit(Long habitId) {
+        Habit habit=habitRepository.findById(habitId).orElseThrow(()->new HabitNotFoundException("Habit is not found"));
+        habitRepository.delete(habit);
+    }
 }
