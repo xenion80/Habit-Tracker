@@ -25,9 +25,8 @@ public class CategoryService {
 
     public TaskCategoryDTO createcategory(Long userId, String name){
         User user=userRepository.findById(userId).orElseThrow(()->new UserNotFoundException("User not found"));
-        TaskCategory taskCategory=new TaskCategory();
-        taskCategory.setName(name);
-        taskCategory.setUser(user);
+        TaskCategory taskCategory=new TaskCategory(name,user);
+
         TaskCategory saved=taskCategoryRepository.save(taskCategory);
 
         TaskCategoryDTO taskCategoryDTO=new TaskCategoryDTO();
@@ -39,7 +38,7 @@ public class CategoryService {
 
     public Page<TaskDTO> getTasksByCategory(Long categoryId, Pageable pageable) {
 
-        Page<Task> pageResult = taskRepository.findByTaskCategoryId(categoryId, pageable);
+        Page<Task> pageResult = taskRepository.findByTaskCategoryIdAndDeletedAtIsNullAndTaskCategoryDeletedAtIsNull(categoryId, pageable);
 
         return pageResult.map(task -> new TaskDTO(
                 task.getId(),
@@ -48,7 +47,7 @@ public class CategoryService {
         ));
     }
     public Page<TaskCategoryDTO> getCategoryforUser(Long userId,Pageable pageable){
-        Page<TaskCategory> result=taskCategoryRepository.findByUserId(userId,pageable);
+        Page<TaskCategory> result=taskCategoryRepository.findByUserIdAndDeletedAtIsNull(userId,pageable);
         return result.map(taskCategory -> new TaskCategoryDTO(
                 taskCategory.getId(),
                 taskCategory.getName()
@@ -58,7 +57,7 @@ public class CategoryService {
     }
     @Transactional
     public void deleteCategory(Long categoryId) {
-        TaskCategory category=taskCategoryRepository.findById(categoryId).orElseThrow(()->new CategoryNotFoundException("Category not found"));
-        taskCategoryRepository.delete(category);
+        TaskCategory category=taskCategoryRepository.findByIdAndDeletedAtIsNull(categoryId).orElseThrow(()->new CategoryNotFoundException("Category not found"));
+        category.markedDeleted();
     }
 }

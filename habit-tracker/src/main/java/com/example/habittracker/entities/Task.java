@@ -1,28 +1,51 @@
 package com.example.habittracker.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class Task {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
 
-     private boolean completed;
+    private boolean completed;
 
-     @ManyToOne(fetch = FetchType.LAZY)
-     @JoinColumn(name = "task_category_id")
-     private TaskCategory taskCategory;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_category_id", nullable = false)
+    private TaskCategory taskCategory;
 
+    private LocalDateTime deletedAt;
 
+    // ---- Domain actions ----
+
+    public void complete() {
+        this.completed = true;
+    }
+
+    public void markDeleted() {
+        if (this.deletedAt == null) {
+            this.deletedAt = LocalDateTime.now();
+        }
+    }
+
+    // Optional but useful
+    public boolean isDeleted() {
+        return this.deletedAt != null;
+    }
+
+    public Task(String title, TaskCategory taskCategory) {
+        this.title = title;
+        this.taskCategory = taskCategory;
+        this.completed = false;
+        this.deletedAt = null;
+    }
 }

@@ -31,6 +31,11 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
+    @GetMapping("/tasks/{taskId}")
+    public ResponseEntity<TaskDTO> getTask(@PathVariable Long taskId){
+        return ResponseEntity.ok(taskService.getTask(taskId));
+    }
+
     @DeleteMapping("/tasks/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId){
         taskService.deleteTask(taskId);

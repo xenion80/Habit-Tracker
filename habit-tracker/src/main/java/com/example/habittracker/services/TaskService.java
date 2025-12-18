@@ -13,6 +13,7 @@ import com.example.habittracker.repositories.TaskRepository;
 import com.example.habittracker.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,12 +28,10 @@ public class TaskService {
     private final UserRepository userRepository;
 
     public TaskDTO createTask(Long TaskCategoryId, String title){
-        TaskCategory taskCategory=taskCategoryRepository.findById(TaskCategoryId).orElseThrow(()->new TaskNotFoundException("Task Category don't exist"));
+        TaskCategory taskCategory=taskCategoryRepository.findById(TaskCategoryId).orElseThrow(()->new CategoryNotFoundException("Task Category don't exist"));
 
-        Task task=new Task();
-        task.setTaskCategory(taskCategory);
-        task.setTitle(title);
-        task.setCompleted(false);
+        Task task=new Task(title,taskCategory);
+
 
         taskCategory.getTasks().add(task);
         Task savedTask=taskRepository.save(task);
@@ -48,11 +47,12 @@ public class TaskService {
 
     }
 
+    @Transactional
     public TaskDTO getTaskDone(Long taskid){
-        Task task=taskRepository.findById(taskid).orElseThrow(()->new TaskNotFoundException("task not found"));
+        Task task=taskRepository.findByIdAndDeletedAtIsNull(taskid).orElseThrow(()->new TaskNotFoundException("task not found"));
 
-        task.setCompleted(true);
-        taskRepository.save(task);
+        task.complete();
+
 
 
         TaskDTO taskDTO=new TaskDTO();
@@ -65,7 +65,12 @@ public class TaskService {
 
     @Transactional
     public void deleteTask(Long taskId) {
-        Task task=taskRepository.findById(taskId).orElseThrow(()->new TaskNotFoundException("the task doesn't exist"));
-        taskRepository.delete(task);
+        Task task=taskRepository.findByIdAndDeletedAtIsNull(taskId).orElseThrow(()->new TaskNotFoundException("the task doesn't exist"));
+        task.markDeleted();
+    }
+
+    public  TaskDTO getTask(Long taskId) {
+        Task task=taskRepository.findByIdAndDeletedAtIsNull(taskId).orElseThrow(()->new TaskNotFoundException("the task doesn't exist"));
+        return new TaskDTO(task.getId(),task.getTitle(),task.isCompleted());
     }
 }

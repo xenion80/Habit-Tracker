@@ -6,12 +6,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskCategory {
@@ -31,4 +31,21 @@ public class TaskCategory {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    private LocalDateTime deletedAt;
+
+    public void markedDeleted(){
+        if(this.deletedAt==null){
+            this.deletedAt=LocalDateTime.now();
+        }
+    }
+    public boolean isDeleted(){
+        return this.deletedAt!=null;
+    }
+
+    public TaskCategory(String name,User user){
+        this.name=name;
+        this.user=user;
+    }
+
 }
