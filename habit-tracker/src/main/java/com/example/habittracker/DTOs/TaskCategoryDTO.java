@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @RequiredArgsConstructor
 public class TaskCategoryDTO {
     private Long id;

@@ -48,7 +48,7 @@ public class CategoryService {
         ));
     }
     public Page<TaskCategoryDTO> getCategoryforUser(Long userId,Pageable pageable){
-        Page<TaskCategory> result=taskRepository.findByUserId(userId,pageable);
+        Page<TaskCategory> result=taskCategoryRepository.findByUserId(userId,pageable);
         return result.map(taskCategory -> new TaskCategoryDTO(
                 taskCategory.getId(),
                 taskCategory.getName()
