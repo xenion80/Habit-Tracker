@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,4 +24,9 @@ public class HabitLog {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "habit_id")
     private Habit habit;
+
+    public HabitLog(Habit habit, LocalDate now) {
+        this.habit=habit;
+        this.date=now;
+    }
 }

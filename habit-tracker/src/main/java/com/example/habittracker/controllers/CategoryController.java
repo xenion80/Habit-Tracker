@@ -66,6 +66,10 @@ public class CategoryController {
 
         return ResponseEntity.ok(categoryService.getTasksByCategory(categoryId, pageable));
     }
+    @GetMapping("/categories/{categoryId}")
+    public ResponseEntity<TaskCategoryDTO> getCategory(@PathVariable Long categoryId){
+        return ResponseEntity.ok(categoryService.getCategory(categoryId));
+    }
 
 
 

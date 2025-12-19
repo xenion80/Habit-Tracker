@@ -12,6 +12,7 @@ import com.example.habittracker.repositories.TaskRepository;
 import com.example.habittracker.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -59,5 +60,10 @@ public class CategoryService {
     public void deleteCategory(Long categoryId) {
         TaskCategory category=taskCategoryRepository.findByIdAndDeletedAtIsNull(categoryId).orElseThrow(()->new CategoryNotFoundException("Category not found"));
         category.markedDeleted();
+    }
+
+    public  TaskCategoryDTO getCategory(Long categoryId) {
+        TaskCategory taskCategory=taskCategoryRepository.findByIdAndDeletedAtIsNull(categoryId).orElseThrow(()->new CategoryNotFoundException("Category not found"));
+        return new TaskCategoryDTO(taskCategory.getId(),taskCategory.getName());
     }
 }

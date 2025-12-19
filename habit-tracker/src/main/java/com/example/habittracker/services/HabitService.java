@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +27,7 @@ public class HabitService {
 
     public HabitDTO createHabit(Long UserId, String title){
         User user=userRepository.findById(UserId).orElseThrow(()->new UserNotFoundException("User not found"));
-        Habit habit=new Habit();
-        habit.setTitle(title);
-        habit.setStreak(0);
-        habit.setUser(user);
+        Habit habit=new Habit(title,user);
 
         user.getHabits().add(habit);
 
@@ -46,13 +42,8 @@ public class HabitService {
     }
     @Transactional
     public HabitDTO completeHabit(Long HabitId){
-        Habit habit=habitRepository.findById(HabitId).orElseThrow(()->new HabitNotFoundException("Habit not found"));
-        HabitLog log=new HabitLog();
-        log.setHabit(habit);
-        log.setDate(LocalDate.now());
-
-        habit.getLogs().add(log);
-        habit.setStreak(habit.getStreak()+1);
+        Habit habit=habitRepository.findByIdAndDeletedAtIsNull(HabitId).orElseThrow(()->new HabitNotFoundException("Habit not found"));
+        habit.completeToday();
 
         HabitDTO dto=new HabitDTO();
         dto.setStreak(habit.getStreak());
@@ -79,7 +70,7 @@ public class HabitService {
 
     @Transactional
     public Page<HabitDTO> getAllHabitForUser(Long UserId, Pageable pageable) {
-       Page<Habit> habits=habitRepository.findByUserId(UserId,pageable);
+       Page<Habit> habits=habitRepository.findByUserIdAndDeletedAtIsNull(UserId,pageable);
         return habits.map(habit -> new HabitDTO(
                 habit.getId(),
                 habit.getTitle(),
@@ -89,7 +80,7 @@ public class HabitService {
 
     @Transactional
     public void deleteHabit(Long habitId) {
-        Habit habit=habitRepository.findById(habitId).orElseThrow(()->new HabitNotFoundException("Habit is not found"));
-        habitRepository.delete(habit);
+        Habit habit=habitRepository.findByIdAndDeletedAtIsNull(habitId).orElseThrow(()->new HabitNotFoundException("Habit is not found"));
+        habit.markDeleted();
     }
 }
