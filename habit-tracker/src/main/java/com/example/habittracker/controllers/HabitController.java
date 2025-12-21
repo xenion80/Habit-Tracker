@@ -2,7 +2,7 @@ package com.example.habittracker.controllers;
 
 import com.example.habittracker.DTOs.HabitDTO;
 import com.example.habittracker.DTOs.HabitLogDTO;
-import com.example.habittracker.DTOs.UserDTO;
+import com.example.habittracker.entities.Habit;
 import com.example.habittracker.inputmodels.CreateHabitRequest;
 import com.example.habittracker.services.HabitService;
 import jakarta.validation.Valid;
@@ -15,8 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,14 +36,19 @@ public class HabitController {
 
     }
 
-    @PostMapping("habits/{habitId}/complete")
-    public ResponseEntity<HabitDTO> completedHabit(@PathVariable("habitId") Long id){
-        HabitDTO dto=habitService.completeHabit(id);
+    @PostMapping("/users/{userId}/habits/{habitId}/complete")
+    public ResponseEntity<HabitDTO> completedHabit(
+            @PathVariable Long habitId,
+            @PathVariable Long userId
+    ) {
+        HabitDTO dto = habitService.completeHabit(habitId, userId);
         return ResponseEntity.ok(dto);
     }
-    @GetMapping("habits/{habitId}/logs")
+
+    @GetMapping("/users/{userId}/habits/{habitId}/logs")
     public ResponseEntity<Page<HabitLogDTO>> getLogs(
             @PathVariable Long habitId,
+            @PathVariable Long userId,
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to,
             @RequestParam(defaultValue = "0") int page,
@@ -57,11 +62,12 @@ public class HabitController {
 
         Pageable pageable = PageRequest.of(page, size, sorting);
 
+
         LocalDate start = from != null ? LocalDate.parse(from) : null;
         LocalDate end = to != null ? LocalDate.parse(to) : null;
 
         return ResponseEntity.ok(
-                habitService.getLogs(habitId, start, end, pageable)
+                habitService.getLogs(habitId,userId, start, end, pageable)
         );
     }
     @GetMapping("/users/{id}/habits")
@@ -80,10 +86,21 @@ public class HabitController {
 
         return ResponseEntity.ok(habitService.getAllHabitForUser(id, pageable));
     }
+    @GetMapping("/users/{userId}/habits/{habitId}")
+    public ResponseEntity<HabitDTO> getHabitById(
+            @PathVariable Long habitId,
+            @PathVariable Long userId
+            ){
+        HabitDTO dto=habitService.getHabitById(habitId,userId);
+        return ResponseEntity.status(HttpStatus.FOUND).body(dto);
+    }
 
-    @DeleteMapping("/habits/{habitId}")
-    public ResponseEntity<Void> deleteHabit(@PathVariable Long habitId){
-        habitService.deleteHabit(habitId);
+    @DeleteMapping("users/{userId}/habits/{habitId}")
+    public ResponseEntity<Void> deleteHabit(
+            @PathVariable Long habitId,
+            @PathVariable Long userId
+    ){
+        habitService.deleteHabit(habitId,userId);
         return ResponseEntity.noContent().build();
     }
 

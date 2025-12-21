@@ -5,6 +5,7 @@ import com.example.habittracker.DTOs.HabitLogDTO;
 import com.example.habittracker.entities.Habit;
 import com.example.habittracker.entities.HabitLog;
 import com.example.habittracker.entities.User;
+import com.example.habittracker.exception.AccessDeniedException;
 import com.example.habittracker.exception.HabitNotFoundException;
 import com.example.habittracker.exception.UserNotFoundException;
 import com.example.habittracker.repositories.HabitLogRepository;
@@ -41,8 +42,9 @@ public class HabitService {
 
     }
     @Transactional
-    public HabitDTO completeHabit(Long HabitId){
-        Habit habit=habitRepository.findByIdAndDeletedAtIsNull(HabitId).orElseThrow(()->new HabitNotFoundException("Habit not found"));
+    public HabitDTO completeHabit(Long habitId, Long userId) {
+        Habit habit=habitRepository.findByIdAndDeletedAtIsNull(habitId).orElseThrow(()->new HabitNotFoundException("Habit not found"));
+        if (!habit.getUser().getId().equals(userId))throw new AccessDeniedException("you don't own this habit");
         habit.completeToday();
 
         HabitDTO dto=new HabitDTO();
@@ -52,9 +54,13 @@ public class HabitService {
         return dto;
 
     }
-    public Page<HabitLogDTO> getLogs(Long habitId, LocalDate from, LocalDate to, Pageable pageable) {
+    public Page<HabitLogDTO> getLogs(Long habitId,Long userId, LocalDate from, LocalDate to, Pageable pageable) {
+
+        Habit habit=habitRepository.findByIdAndDeletedAtIsNull(userId).orElseThrow(()->new HabitNotFoundException("habit doesn't exist"));
+        if (habit.getUser().getId().equals(userId))throw new AccessDeniedException("you don't have to the logs");
 
         Page<HabitLog> pageResult;
+
 
         if (from != null && to != null) {
             pageResult = habitLogRepository.findByHabitIdAndDateBetween(habitId, from, to, pageable);
@@ -77,10 +83,17 @@ public class HabitService {
                 habit.getStreak()
         ));
     }
+    public HabitDTO getHabitById(Long habitId, Long userId){
+        Habit habit=habitRepository.findByIdAndDeletedAtIsNull(habitId).orElseThrow(()->new HabitNotFoundException("Habit doesn't exist"));
+        if (!habit.getUser().getId().equals(userId))throw new AccessDeniedException("you dont have access to this habit");
+        return new HabitDTO(habit.getId(),habit.getTitle(),habit.getStreak());
+
+    }
 
     @Transactional
-    public void deleteHabit(Long habitId) {
+    public void deleteHabit(Long habitId,Long userId) {
         Habit habit=habitRepository.findByIdAndDeletedAtIsNull(habitId).orElseThrow(()->new HabitNotFoundException("Habit is not found"));
+        if(!habit.getUser().getId().equals(userId))throw new AccessDeniedException("You don't have the access to delete the the habit");
         habit.markDeleted();
     }
 }

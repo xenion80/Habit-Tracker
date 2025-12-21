@@ -3,7 +3,6 @@ package com.example.habittracker.controllers;
 import com.example.habittracker.DTOs.TaskCategoryDTO;
 import com.example.habittracker.DTOs.TaskDTO;
 import com.example.habittracker.inputmodels.CreateCategoryRequest;
-import com.example.habittracker.inputmodels.CreateTaskRequest;
 import com.example.habittracker.services.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,9 +49,10 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getCategoryforUser(userId,pageable));
     }
 
-    @GetMapping("/{categoryId}/tasks")
+    @GetMapping("/users/{userId}/category/{categoryId}/tasks")
     public ResponseEntity<Page<TaskDTO>> getTasksByCategory(
             @PathVariable Long categoryId,
+            @PathVariable Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id,asc") String sort
@@ -64,18 +64,21 @@ public class CategoryController {
 
         Pageable pageable = PageRequest.of(page, size, sorting);
 
-        return ResponseEntity.ok(categoryService.getTasksByCategory(categoryId, pageable));
+        return ResponseEntity.ok(categoryService.getTasksByCategory(categoryId,userId, pageable));
     }
     @GetMapping("/categories/{categoryId}")
-    public ResponseEntity<TaskCategoryDTO> getCategory(@PathVariable Long categoryId){
-        return ResponseEntity.ok(categoryService.getCategory(categoryId));
+    public ResponseEntity<TaskCategoryDTO> getCategory(@PathVariable Long categoryId,@PathVariable Long userId){
+        return ResponseEntity.ok(categoryService.getCategory(categoryId,userId));
     }
 
 
 
-    @DeleteMapping("/{categoryId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId){
-        categoryService.deleteCategory(categoryId);
+    @DeleteMapping("/users/{userId}/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(
+            @PathVariable Long categoryId,
+            @PathVariable Long userId
+    ){
+        categoryService.deleteCategory(categoryId,userId);
         return ResponseEntity.noContent().build();
     }
 }

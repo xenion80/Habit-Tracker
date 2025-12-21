@@ -5,12 +5,14 @@ import com.example.habittracker.exception.HabitNotFoundException;
 import com.example.habittracker.exception.TaskNotFoundException;
 import com.example.habittracker.exception.UserNotFoundException;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
+import org.springframework.expression.AccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -75,14 +77,24 @@ public class GlobalExceptionHandler {
                 .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
-
-    public ResponseEntity<ApiError> otherException(Exception exception){
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccess(AccessDeniedException exception){
         ApiError apiError=ApiError.builder()
-                .status(500)
+                .status(403)
                 .message(Collections.singletonList(exception.getMessage()))
                 .timestamp(LocalDateTime.now())
                 .build();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiError> otherException(IllegalStateException exception){
+        ApiError apiError=ApiError.builder()
+                .status(409)
+                .message(Collections.singletonList(exception.getMessage()))
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
     }
 
 }

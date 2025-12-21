@@ -5,6 +5,7 @@ import com.example.habittracker.DTOs.TaskDTO;
 import com.example.habittracker.entities.Task;
 import com.example.habittracker.entities.TaskCategory;
 import com.example.habittracker.entities.User;
+import com.example.habittracker.exception.AccessDeniedException;
 import com.example.habittracker.exception.CategoryNotFoundException;
 import com.example.habittracker.exception.UserNotFoundException;
 import com.example.habittracker.repositories.TaskCategoryRepository;
@@ -37,8 +38,10 @@ public class CategoryService {
 
     }
 
-    public Page<TaskDTO> getTasksByCategory(Long categoryId, Pageable pageable) {
+    public Page<TaskDTO> getTasksByCategory(Long categoryId,Long userId, Pageable pageable) {
 
+        TaskCategory taskCategory=taskCategoryRepository.findByIdAndDeletedAtIsNull(categoryId).orElseThrow(()->new CategoryNotFoundException("the task category doesn't exist"));
+        if(!taskCategory.getUser().getId().equals(userId))throw new AccessDeniedException("you dont have access to the category");
         Page<Task> pageResult = taskRepository.findByTaskCategoryIdAndDeletedAtIsNullAndTaskCategoryDeletedAtIsNull(categoryId, pageable);
 
         return pageResult.map(task -> new TaskDTO(
@@ -57,13 +60,15 @@ public class CategoryService {
         ));
     }
     @Transactional
-    public void deleteCategory(Long categoryId) {
+    public void deleteCategory(Long categoryId,Long userId) {
         TaskCategory category=taskCategoryRepository.findByIdAndDeletedAtIsNull(categoryId).orElseThrow(()->new CategoryNotFoundException("Category not found"));
+        if(category.getUser().getId().equals(userId))throw new AccessDeniedException("you don't have aceess to delete the category");
         category.markedDeleted();
     }
 
-    public  TaskCategoryDTO getCategory(Long categoryId) {
+    public  TaskCategoryDTO getCategory(Long categoryId,Long userId) {
         TaskCategory taskCategory=taskCategoryRepository.findByIdAndDeletedAtIsNull(categoryId).orElseThrow(()->new CategoryNotFoundException("Category not found"));
+        if (!taskCategory.getUser().getId().equals(userId))throw new AccessDeniedException("you dont have access");
         return new TaskCategoryDTO(taskCategory.getId(),taskCategory.getName());
     }
 }

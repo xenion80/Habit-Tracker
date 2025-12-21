@@ -5,6 +5,7 @@ import com.example.habittracker.DTOs.TaskDTO;
 import com.example.habittracker.entities.Task;
 import com.example.habittracker.entities.TaskCategory;
 import com.example.habittracker.entities.User;
+import com.example.habittracker.exception.AccessDeniedException;
 import com.example.habittracker.exception.CategoryNotFoundException;
 import com.example.habittracker.exception.TaskNotFoundException;
 import com.example.habittracker.exception.UserNotFoundException;
@@ -27,9 +28,10 @@ public class TaskService {
     private final TaskCategoryRepository taskCategoryRepository;
     private final UserRepository userRepository;
 
-    public TaskDTO createTask(Long TaskCategoryId, String title){
+    public TaskDTO createTask(Long TaskCategoryId,Long userId, String title){
         TaskCategory taskCategory=taskCategoryRepository.findById(TaskCategoryId).orElseThrow(()->new CategoryNotFoundException("Task Category don't exist"));
 
+        if (!taskCategory.getUser().getId().equals(userId))throw new AccessDeniedException("access denied");
         Task task=new Task(title,taskCategory);
 
 
@@ -48,9 +50,10 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskDTO getTaskDone(Long taskid){
+    public TaskDTO getTaskDone(Long taskid,Long userId){
         Task task=taskRepository.findByIdAndDeletedAtIsNull(taskid).orElseThrow(()->new TaskNotFoundException("task not found"));
 
+        if (!task.getTaskCategory().getUser().getId().equals(userId))throw new AccessDeniedException("access denied");
         task.complete();
 
 
@@ -64,13 +67,15 @@ public class TaskService {
 
 
     @Transactional
-    public void deleteTask(Long taskId) {
+    public void deleteTask(Long taskId,Long userId) {
         Task task=taskRepository.findByIdAndDeletedAtIsNull(taskId).orElseThrow(()->new TaskNotFoundException("the task doesn't exist"));
+        if (!task.getTaskCategory().getUser().getId().equals(userId))throw new AccessDeniedException("access denied");
         task.markDeleted();
     }
 
-    public  TaskDTO getTask(Long taskId) {
+    public  TaskDTO getTask(Long taskId,Long userId) {
         Task task=taskRepository.findByIdAndDeletedAtIsNull(taskId).orElseThrow(()->new TaskNotFoundException("the task doesn't exist"));
+        if (!task.getTaskCategory().getUser().getId().equals(userId))throw new AccessDeniedException("access denied");
         return new TaskDTO(task.getId(),task.getTitle(),task.isCompleted());
     }
 }
