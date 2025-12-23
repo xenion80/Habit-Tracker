@@ -48,4 +48,12 @@ public class TaskCategory {
         this.user=user;
     }
 
+    public void rename(String newTitle){
+        if(this.deletedAt!=null)throw new IllegalStateException("cannot rename a deleted task category");
+        if (newTitle == null || newTitle.isBlank()) {
+            throw new IllegalArgumentException("Habit title cannot be blank");
+        }
+        this.name=newTitle;
+    }
+
 }

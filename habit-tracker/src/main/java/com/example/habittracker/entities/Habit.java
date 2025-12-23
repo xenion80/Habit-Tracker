@@ -35,9 +35,11 @@ public class Habit {
             fetch = FetchType.LAZY,
             orphanRemoval = true
     )
-    List<HabitLog> logs=new ArrayList<>();
+    private List<HabitLog> logs=new ArrayList<>();
     private LocalDateTime deletedAt;
 
+
+    //domain fields
     public void markDeleted() {
         if (this.deletedAt == null) {
             this.deletedAt = LocalDateTime.now();
@@ -66,6 +68,14 @@ public class Habit {
         this.logs.add(log);
         this.streak++;
     }
+    public void rename(String newTitle){
+        if (this.deletedAt!=null)throw new IllegalStateException("cannot rename a deleted habit");
+        if (newTitle == null || newTitle.isBlank()) {
+            throw new IllegalArgumentException("Habit title cannot be blank");
+        }
+        this.title=newTitle;
+    }
+
 
 
 }

@@ -3,6 +3,7 @@ package com.example.habittracker.controllers;
 import com.example.habittracker.DTOs.TaskCategoryDTO;
 import com.example.habittracker.DTOs.TaskDTO;
 import com.example.habittracker.inputmodels.CreateCategoryRequest;
+import com.example.habittracker.inputmodels.RenameCategoryRequest;
 import com.example.habittracker.services.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,15 +38,14 @@ public class CategoryController {
     @GetMapping("/{userId}/categories")
     public ResponseEntity<Page<TaskCategoryDTO>> getCategoriesforUser(
             @PathVariable Long userId,
-            @RequestParam(defaultValue = "0")int page,
-            @RequestParam(defaultValue = "10")int size,
-            @RequestParam(defaultValue = "id,asc")String sort
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "id",
+                    direction = Sort.Direction.DESC
+            )
+            Pageable pageable
     ){
-        String[] sortParam=sort.split(",");
-        Sort sorting=sortParam[1].equalsIgnoreCase("desc")
-                ?Sort.by(sortParam[0]).descending()
-                :Sort.by(sortParam[0]).ascending();
-        Pageable pageable=PageRequest.of(page,size,sorting);
 
         return ResponseEntity.ok(categoryService.getCategoryforUser(userId,pageable));
     }
@@ -53,32 +54,40 @@ public class CategoryController {
     public ResponseEntity<Page<TaskDTO>> getTasksByCategory(
             @PathVariable Long categoryId,
             @PathVariable Long userId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size,
-            @RequestParam(defaultValue = "id,asc") String sort
+            @PageableDefault(
+                    page = 0,
+                    size = 10,
+                    sort = "id",
+                    direction = Sort.Direction.ASC
+            )
+            Pageable pageable
     ) {
-        String[] sortParams = sort.split(",");
-        Sort sorting = sortParams[1].equalsIgnoreCase("desc")
-                ? Sort.by(sortParams[0]).descending()
-                : Sort.by(sortParams[0]).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sorting);
 
         return ResponseEntity.ok(categoryService.getTasksByCategory(categoryId,userId, pageable));
     }
-    @GetMapping("/categories/{categoryId}")
+    @GetMapping("/users/{userId}/categories/{categoryId}")
     public ResponseEntity<TaskCategoryDTO> getCategory(@PathVariable Long categoryId,@PathVariable Long userId){
         return ResponseEntity.ok(categoryService.getCategory(categoryId,userId));
     }
 
 
 
-    @DeleteMapping("/users/{userId}/{categoryId}")
+    @DeleteMapping("/users/{userId}/category/{categoryId}")
     public ResponseEntity<Void> deleteCategory(
             @PathVariable Long categoryId,
             @PathVariable Long userId
     ){
         categoryService.deleteCategory(categoryId,userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/users/{userId}/category/{categoryId}")
+    public ResponseEntity<TaskCategoryDTO> renameCategory(
+            @PathVariable Long categoryId,
+            @PathVariable Long userId,
+            @Valid@RequestBody RenameCategoryRequest request
+            ){
+
+        return ResponseEntity.ok(categoryService.renameCategory(categoryId,userId,request));
     }
 }

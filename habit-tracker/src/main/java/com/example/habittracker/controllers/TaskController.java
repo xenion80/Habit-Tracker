@@ -2,6 +2,7 @@ package com.example.habittracker.controllers;
 
 import com.example.habittracker.DTOs.TaskDTO;
 import com.example.habittracker.inputmodels.CreateTaskRequest;
+import com.example.habittracker.inputmodels.RenameTaskRequest;
 import com.example.habittracker.services.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +52,15 @@ public class TaskController {
     ){
         taskService.deleteTask(taskId,userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/users/{userId}/task/{taskId}")
+    public ResponseEntity<TaskDTO> renameTask(
+            @PathVariable Long taskId,
+            @PathVariable Long userId,
+            @Valid@PathVariable RenameTaskRequest request
+            ){
+        return ResponseEntity.ok(taskService.renameTask(taskId,userId,request));
     }
 
 

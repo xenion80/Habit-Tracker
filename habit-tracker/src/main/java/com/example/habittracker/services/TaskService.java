@@ -9,6 +9,7 @@ import com.example.habittracker.exception.AccessDeniedException;
 import com.example.habittracker.exception.CategoryNotFoundException;
 import com.example.habittracker.exception.TaskNotFoundException;
 import com.example.habittracker.exception.UserNotFoundException;
+import com.example.habittracker.inputmodels.RenameTaskRequest;
 import com.example.habittracker.repositories.TaskCategoryRepository;
 import com.example.habittracker.repositories.TaskRepository;
 import com.example.habittracker.repositories.UserRepository;
@@ -76,6 +77,13 @@ public class TaskService {
     public  TaskDTO getTask(Long taskId,Long userId) {
         Task task=taskRepository.findByIdAndDeletedAtIsNull(taskId).orElseThrow(()->new TaskNotFoundException("the task doesn't exist"));
         if (!task.getTaskCategory().getUser().getId().equals(userId))throw new AccessDeniedException("access denied");
+        return new TaskDTO(task.getId(),task.getTitle(),task.isCompleted());
+    }
+
+    public  TaskDTO renameTask(Long taskId, Long userId, RenameTaskRequest request) {
+        Task task=taskRepository.findByIdAndDeletedAtIsNull(taskId).orElseThrow(()->new TaskNotFoundException("task is not found"));
+        if (!task.getTaskCategory().getUser().getId().equals(userId))throw new AccessDeniedException("access denied");
+        task.rename(request.getTitle());
         return new TaskDTO(task.getId(),task.getTitle(),task.isCompleted());
     }
 }

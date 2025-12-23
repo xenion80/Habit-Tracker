@@ -48,4 +48,12 @@ public class Task {
         this.completed = false;
         this.deletedAt = null;
     }
+
+    public void rename(String newTitle) {
+        if (this.deletedAt!=null)throw new IllegalStateException("cannot rename a deleted task task");
+        if (newTitle == null || newTitle.isBlank()) {
+            throw new IllegalArgumentException("Habit title cannot be blank");
+        }
+        this.title=newTitle;
+    }
 }

@@ -8,6 +8,7 @@ import com.example.habittracker.entities.User;
 import com.example.habittracker.exception.AccessDeniedException;
 import com.example.habittracker.exception.CategoryNotFoundException;
 import com.example.habittracker.exception.UserNotFoundException;
+import com.example.habittracker.inputmodels.RenameCategoryRequest;
 import com.example.habittracker.repositories.TaskCategoryRepository;
 import com.example.habittracker.repositories.TaskRepository;
 import com.example.habittracker.repositories.UserRepository;
@@ -69,6 +70,13 @@ public class CategoryService {
     public  TaskCategoryDTO getCategory(Long categoryId,Long userId) {
         TaskCategory taskCategory=taskCategoryRepository.findByIdAndDeletedAtIsNull(categoryId).orElseThrow(()->new CategoryNotFoundException("Category not found"));
         if (!taskCategory.getUser().getId().equals(userId))throw new AccessDeniedException("you dont have access");
+        return new TaskCategoryDTO(taskCategory.getId(),taskCategory.getName());
+    }
+
+    public TaskCategoryDTO renameCategory(Long categoryId, Long userId, RenameCategoryRequest request) {
+        TaskCategory taskCategory=taskCategoryRepository.findByIdAndDeletedAtIsNull(categoryId).orElseThrow(()->new CategoryNotFoundException("Category not found"));
+        if (!taskCategory.getUser().getId().equals(userId))throw new AccessDeniedException("You don't have access");
+        taskCategory.rename(request.getTitle());
         return new TaskCategoryDTO(taskCategory.getId(),taskCategory.getName());
     }
 }

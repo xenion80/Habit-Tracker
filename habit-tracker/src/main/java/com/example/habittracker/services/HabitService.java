@@ -8,6 +8,7 @@ import com.example.habittracker.entities.User;
 import com.example.habittracker.exception.AccessDeniedException;
 import com.example.habittracker.exception.HabitNotFoundException;
 import com.example.habittracker.exception.UserNotFoundException;
+import com.example.habittracker.inputmodels.RenameHabitRequest;
 import com.example.habittracker.repositories.HabitLogRepository;
 import com.example.habittracker.repositories.HabitRepository;
 import com.example.habittracker.repositories.UserRepository;
@@ -95,5 +96,13 @@ public class HabitService {
         Habit habit=habitRepository.findByIdAndDeletedAtIsNull(habitId).orElseThrow(()->new HabitNotFoundException("Habit is not found"));
         if(!habit.getUser().getId().equals(userId))throw new AccessDeniedException("You don't have the access to delete the the habit");
         habit.markDeleted();
+    }
+
+    public HabitDTO renameHabit(Long habitId, Long userId, RenameHabitRequest request){
+        Habit habit=habitRepository.findByIdAndDeletedAtIsNull(habitId).orElseThrow(()->new HabitNotFoundException("the habit doesn't exist"));
+        if (!habit.getUser().getId().equals(userId))throw new AccessDeniedException("Access denied");
+        habit.rename(request.getTitle());
+        return new HabitDTO(habit.getId(),habit.getTitle(),habit.getStreak());
+
     }
 }

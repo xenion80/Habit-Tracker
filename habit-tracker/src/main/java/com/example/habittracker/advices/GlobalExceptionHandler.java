@@ -5,14 +5,14 @@ import com.example.habittracker.exception.HabitNotFoundException;
 import com.example.habittracker.exception.TaskNotFoundException;
 import com.example.habittracker.exception.UserNotFoundException;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
-import org.springframework.expression.AccessException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.nio.file.AccessDeniedException;
+import com.example.habittracker.exception.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
