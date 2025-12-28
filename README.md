@@ -156,6 +156,14 @@ Used for deployment and operational checks.
    ```
 
 ---
+
+## 🌍 Live Deployment
+
+The API is deployed on Railway:
+
+https://habit-tracker-production-2b71.up.railway.app/
+
+---
 ## 📡 API Overview
 
 This API exposes endpoints for managing users, habits, categories, and tasks.
@@ -203,6 +211,15 @@ This project was built to deeply understand:
 * Why domain rules matter
 * How to design APIs that are hard to misuse
 * How to structure Spring Boot applications cleanly
+
+---
+## ⚠️ Configuration Note
+
+For learning purposes, database credentials are currently configured directly
+for the deployed instance.
+
+This will be migrated to environment-based configuration when CI/CD
+and deployment automation are introduced.
 
 ---
 
