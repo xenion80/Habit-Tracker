@@ -5,18 +5,17 @@ FROM eclipse-temurin:21-jdk-alpine AS build
 
 WORKDIR /app
 
-# Copy Maven files first (for caching)
-COPY pom.xml .
-COPY mvnw .
-COPY .mvn .mvn
+# Copy Maven wrapper & config from inner project
+COPY habit-tracker/pom.xml .
+COPY habit-tracker/mvnw .
+COPY habit-tracker/.mvn .mvn
 
-# Download dependencies
 RUN ./mvnw dependency:go-offline
 
-# Copy source code
-COPY src src
+# Copy ACTUAL source directory
+COPY habit-tracker/src src
 
-# Build the application
+# Build the JAR
 RUN ./mvnw clean package -DskipTests
 
 # ==============================
@@ -26,7 +25,6 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-# Copy the built JAR from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
