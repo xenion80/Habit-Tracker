@@ -4,4 +4,13 @@
     <option name="defaultUnitInitialized" value="true" />
     <option name="renamerInitialized" value="true" />
   </component>
+  <component name="PersistenceUnitSettings">
+    <persistence-units>
+      <persistence-unit moduleName="habit-tracker" name="Default">
+        <packages>
+          <package value="com.example.habittracker" />
+        </packages>
+      </persistence-unit>
+    </persistence-units>
+  </component>
 </project>
