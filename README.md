@@ -225,8 +225,8 @@ This project was built to deeply understand:
 
 ## 📜 License
 
-This project is licensed under the MIT License.
-See LICENSE.md(./license.md) for details.
+* This project is licensed under the MIT License.
+* See LICENSE.md(License.md) for details.
 
 
 ---
