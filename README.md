@@ -3,8 +3,13 @@
 
 A backend REST API for tracking habits, categories, and tasks with **clean domain modeling**, **ownership enforcement**, **soft deletion**, and **proper HTTP semantics**.
 
-This project is built as a **learning-focused but production-quality backend**, emphasizing correctness, invariants, and maintainability over feature sprawl.
+This project is built as a **learning-focused backend built with production-grade design principles**, emphasizing correctness, invariants, and maintainability over feature sprawl.
 
+---
+## This project is intended for:
+- students learning backend engineering
+- developers exploring domain-driven design in Spring Boot
+- contributors interested in clean API semantics
 ---
 
 ## 🚀 Features
@@ -19,7 +24,24 @@ This project is built as a **learning-focused but production-quality backend**, 
 * Global exception handling with correct HTTP status codes
 * Pagination, sorting, and filtering
 * DTO-based API responses
+  
+> **Note: User ownership is currently enforced at the service layer; authentication is planned.**
 
+
+---
+## 📡 API Overview
+
+This API exposes endpoints for managing users, habits, categories, and tasks.
+
+Key operations include:
+- Creating and managing habits per user
+- Daily habit completion with streak tracking
+- Categorization of tasks
+- Soft deletion and PATCH-based updates
+- Ownership-enforced access to all resources
+
+For a full list of endpoints and request examples, see:
+👉 [API Documentation](./API.md)
 ---
 
 ## 🧠 Design Principles Used
@@ -53,8 +75,8 @@ This project is built as a **learning-focused but production-quality backend**, 
 
 ## 🛠️ Tech Stack
 
-* Java
-* Spring Boot
+* Java 21
+* Spring Boot (Web, Data JPA, Actuator)
 * Spring Data JPA
 * Hibernate
 * PostgreSQL / MySQL (configurable)
@@ -164,20 +186,6 @@ The API is deployed on Render:
 https://habit-tracker-ryua.onrender.com
 
 ---
-## 📡 API Overview
-
-This API exposes endpoints for managing users, habits, categories, and tasks.
-
-Key operations include:
-- Creating and managing habits per user
-- Daily habit completion with streak tracking
-- Categorization of tasks
-- Soft deletion and PATCH-based updates
-- Ownership-enforced access to all resources
-
-For a full list of endpoints and request examples, see:
-👉 [API Documentation](./API.md)
----
 
 ## 📮 API Testing
 
@@ -213,19 +221,35 @@ This project was built to deeply understand:
 * How to structure Spring Boot applications cleanly
 
 ---
-## ⚠️ Configuration Note
 
-For learning purposes, database credentials are currently configured directly
-for the deployed instance.
-
-This will be migrated to environment-based configuration when CI/CD
-and deployment automation are introduced.
-
----
 
 ## 📜 License
 
-This project is for learning and demonstration purposes.
+This project is licensed under the MIT License.
+See LICENSE.md(./license.md) for details.
+
 
 ---
+## 👨‍💻 Author
 
+### Karan Sardar
+
+- GitHub: https://github.com/xenion80
+- Linkedin: https://www.linkedin.com/in/karan-sardar-1521772b4/
+---
+## ⭐ Support
+
+* If you found this project helpful, consider giving it a ⭐️.
+* It helps others discover the project and motivates further improvements.
+
+---
+## 📧 Contact
+
+Have questions? Feel free to reach out:
+- Email: snsardarkaran94@gmail.com
+- Open an issue: [Issues](https://github.com/xenion80/habit-tracker/issues)
+  
+<div align="center">
+
+**Built with ❤️ using Spring Boot • Open Source Friendly💜**
+</div>
