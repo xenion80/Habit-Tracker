@@ -159,9 +159,9 @@ Used for deployment and operational checks.
 
 ## 🌍 Live Deployment
 
-The API is deployed on Railway:
+The API is deployed on Render:
 
-https://habit-tracker-production-2b71.up.railway.app/
+https://habit-tracker-ryua.onrender.com
 
 ---
 ## 📡 API Overview
